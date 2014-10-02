@@ -156,7 +156,7 @@ feature -- Status report
 				loop
 					if elements.item (i, j).value /= 0 then
 						output.append_string ("<div class='grid-cell'><div class='tile-container'><div class='tile tile-" + elements.item (i, j).out  + " tile-position-1-1'><div class='tile-inner'>")
-						output.append_string (elements.item (i, j).out)
+						output.append_string ( "1/" + elements.item (i, j).out)
 						output.append_string ("</div></div></div></div>")
 					else
 						output.append_string ("<div class='grid-cell'>")
@@ -320,7 +320,7 @@ feature -- Status report
 		end
 
 	is_winning_board : BOOLEAN
-		-- Indicates whether 2048 is present in the board, indicating that the board is a winning board
+		-- Indicates whether 1 is present in the board, indicating that the board is a winning board
 		require
 			elements.height=4 and elements.width=4
 		local
@@ -337,7 +337,7 @@ feature -- Status report
 				until
 					j > 4 or is_winning
 				loop
-					if (elements.item (i,j).value = 2048) then
+					if (elements.item (i,j).value = 1) then
 						is_winning := True
 					end
 					j := j + 1
@@ -369,9 +369,9 @@ feature {NONE} -- Auxiliary routines
 
 		do
 			random_value := (get_random (random_sequence, 2) + 1) * 2
-			Result := random_value
+			Result := random_value * 256
 		ensure
-			Result = 2 or Result = 4
+			Result = 512 or Result = 1024
 		end
 
 	get_random_seed : INTEGER

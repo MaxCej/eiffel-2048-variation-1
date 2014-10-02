@@ -100,7 +100,7 @@ feature -- Movement commands
 						end
 						if (k <= 4) then
 							if (board.elements.item (i, j).value = board.elements.item (k, j).value) then
-								board.set_cell (i, j, (board.elements.item (k, j).value + board.elements.item (i, j).value))
+								board.set_cell (i, j, (board.elements.item (k, j).value // 2))
 								board.set_cell (k, j, 0)
 								i := k + 1
 							else
@@ -182,7 +182,7 @@ feature -- Movement commands
 						end
 						if j >= 1 then -- if search is succesful
 							if board.elements.item (aux, i).value = board.elements.item (j, i).value then
-								board.set_cell (aux, i, (board.elements.item (aux, i).value + board.elements.item (j, i).value))
+								board.set_cell (aux, i, (board.elements.item (aux, i).value // 2))
 								board.set_cell (j, i, 0)
 								j := j - 1;
 							end
@@ -251,7 +251,7 @@ feature -- Movement commands
 						end
 						if (k <= 4) then
 							if (board.elements.item (i, j).value = board.elements.item (i, k).value) then
-								board.set_cell (i, j, (board.elements.item (i, k).value + board.elements.item (i, j).value))
+								board.set_cell (i, j, (board.elements.item (i, k).value // 2))
 								board.set_cell (i, k, 0)
 								j := k + 1
 							else
@@ -325,7 +325,7 @@ feature -- Movement commands
 							end
 							if (k >= 1) then
 								if (board.elements.item (i, j).value = board.elements.item (i, k).value) then
-									board.set_cell (i, j, (board.elements.item (i, k).value + board.elements.item (i, j).value))
+									board.set_cell (i, j, (board.elements.item (i, k).value // 2))
 									board.set_cell (i, k, 0)
 									j := k - 1
 								else
@@ -392,9 +392,9 @@ feature {NONE} -- Auxiliary routines
 			random_number: INTEGER
 		do
 			random_number := (get_random (random_sequence, 2) + 1) * 2
-			Result := random_number
+			Result := random_number * 256
 		ensure
-			Result = 2 or Result = 4
+			Result = 512 or Result = 1024
 		end
 
 	get_random_seed: INTEGER

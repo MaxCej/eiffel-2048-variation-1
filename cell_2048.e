@@ -99,9 +99,9 @@ feature {ANY} -- Miscellaneous
 			-- Returns true if value is either 0, or a power of two
 			-- greater than 1.
 		do
-			Result := val = 0 or (val>1 and is_power_of_two(val))
+			Result := val = 0 or (is_power_of_two(val))
 		ensure
-			Result = (val = 0 or (val > 1 and is_power_of_two (val)))
+			Result = (val = 0 or (is_power_of_two (val)))
 		end
 
 	is_power_of_two (val: INTEGER): BOOLEAN
