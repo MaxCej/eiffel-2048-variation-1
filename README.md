@@ -1,7 +1,9 @@
-Eiffel-2048
+Eiffel-2048-Variation-1
 ==========
 
-Eiffel-2048 is an Eiffel implementation of the popular game 2048.The implementation is written entirely in Eiffel, using Design by Contract.It is developed in the context of a course of distributed software engineering.
+Eiffel-2048-Variation-1 is an Eiffel implementation and variation of the popular game 2048.The implementation is written entirely in Eiffel, using Design by Contract.It is developed in the context of a course of distributed software engineering. The variation of the game includes the following rule:
+
+  - instead of adding 2's and 4's to reach 2048, you add 1/1024's and 1/512's to reach 1.
 
 Technologies Involved
 ---------------------
