@@ -177,6 +177,9 @@ feature -- Status report
 					j > columns
 				loop
 					output.append_string ("|")
+					if not(elements.item (i, j) = 0) then
+						output.append_string ("1/")
+					end
 					output.append_string (elements.item (i, j).out)
 					j := j + 1
 				end
