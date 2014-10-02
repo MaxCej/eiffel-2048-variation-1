@@ -29,7 +29,7 @@ feature {ANY}
 feature -- Initialisation
 
 	make_empty
-			-- there is not pre-condition
+			-- there is no pre-condition
 
 			-- Creates an empty board of 4x4 cells (all cells with default value)
 		local
@@ -65,7 +65,7 @@ feature -- Initialisation
 
 	make
 			-- Creates a board of 4x4 cells, with all cells with default value (unset)
-			-- except for two randomly picked cells, which must be set with eithers 2 or 4.
+			-- except for two randomly picked cells, which must be set with either 512 or 1024.
 			-- Values to set the filled cells are chosen randomly. Positions of the two filled
 			-- cells are chosen randomly.
 		local
@@ -106,7 +106,7 @@ feature -- Game State
 
 	is_finished: BOOLEAN
 			-- Indicates whether the game is finished or not.
-			-- Game finishes when either 2048 is reached, or if there is no possible movement.
+			-- Game finishes when either 1 is reached, or if there is no possible movement.
 		local
 			finished: BOOLEAN -- Auxiliary variable to capture the finalization desicion
 		do
@@ -328,7 +328,7 @@ feature -- Status report
 		end
 
 	is_winning_board: BOOLEAN
-			-- Indicates whether 2048 is present in the board, indicating that the board is a winning board
+			-- Indicates whether 1 is present in the board, indicating that the board is a winning board
 		require
 			height_is_four: elements.height = 4
 			width_is_four: elements.width = 4
@@ -346,7 +346,7 @@ feature -- Status report
 				until
 					j > 4 or is_winning
 				loop
-					if (elements.item (i, j).value = 2048) then
+					if (elements.item (i, j).value = 1) then
 						is_winning := True
 					end
 					j := j + 1
@@ -360,7 +360,7 @@ feature -- Movement commands
 
 	down -- Moves the cells to the lowermost possible point of the game board.
 			-- Movement colapses cells with the same value.
-			-- It adds one more random cell with value 2 or 4, after the movement.
+			-- It adds one more random cell with value 512 or 1024, after the movement.
 		require
 			can_move_down
 		local
@@ -389,7 +389,7 @@ feature -- Movement commands
 						end
 						if j >= 1 then -- if search is succesful
 							if elements.item (aux, i).value = elements.item (j, i).value then
-								set_cell (aux, i, (elements.item (aux, i).value + elements.item (j, i).value))
+								set_cell (aux, i, (elements.item (aux, i).value - elements.item (j, i).value))
 								set_cell (j, i, 0)
 								j := j - 1;
 							end
@@ -432,7 +432,7 @@ feature -- Movement commands
 	up
 			-- Moves the cells to the uppermost possible point of the game board.
 			-- Movement colapses cells with the same value.
-			-- It adds one more random cell with value 2 or 4, after the movement.
+			-- It adds one more random cell with value 512 or 1024, after the movement.
 		require
 			can_not_move_up_feature_up: can_move_up
 		local
@@ -460,7 +460,7 @@ feature -- Movement commands
 						end
 						if (k <= 4) then
 							if (elements.item (i, j).value = elements.item (k, j).value) then
-								set_cell (i, j, (elements.item (k, j).value + elements.item (i, j).value))
+								set_cell (i, j, (elements.item (k, j).value - elements.item (i, j).value))
 								set_cell (k, j, 0)
 								i := k + 1
 							else
@@ -514,7 +514,7 @@ feature -- Movement commands
 	left
 			-- Moves the cells to the leftmost possible point of the game board.
 			-- Movement colapses cells with the same value.
-			-- It adds one more random cell with value 2 or 4, after the movement.
+			-- It adds one more random cell with value 512 or 1024, after the movement.
 		require
 			valid_move_left: can_move_left
 		local
@@ -540,7 +540,7 @@ feature -- Movement commands
 						end
 						if (k <= 4) then
 							if (elements.item (i, j).value = elements.item (i, k).value) then
-								set_cell (i, j, (elements.item (i, k).value + elements.item (i, j).value))
+								set_cell (i, j, (elements.item (i, k).value - elements.item (i, j).value))
 								set_cell (i, k, 0)
 								j := k + 1
 							else
@@ -585,7 +585,7 @@ feature -- Movement commands
 	right
 			-- Moves the cells to the rightmost possible point of the game board.
 			-- Movement colapses cells with the same value.
-			-- It adds one more random cell with value 2 or 4, after the movement.
+			-- It adds one more random cell with value 512 or 1024, after the movement.
 
 		require
             require_can_move_right: can_move_right
@@ -613,7 +613,7 @@ feature -- Movement commands
 							end
 							if (k >= 1) then
 								if (elements.item (i, j).value = elements.item (i, k).value) then
-									set_cell (i, j, (elements.item (i, k).value + elements.item (i, j).value))
+									set_cell (i, j, (elements.item (i, k).value - elements.item (i, j).value))
 									set_cell (i, k, 0)
 									j := k - 1
 								else
@@ -744,14 +744,14 @@ feature {CONTROLLER_2048}
 		end
 
 	random_number_two_or_four (random_sequence: RANDOM): INTEGER
-			-- Randomly returns two or four
+			-- Randomly returns 512 or 1024
 		local
 			random_number: INTEGER
 		do
 			random_number := (get_random (random_sequence, 2) + 1) * 2
-			Result := random_number
+			Result := random_number * 256
 		ensure
-			valid_random_number: Result = 2 or Result = 4
+			valid_random_number: Result = 512 or Result = 1024
 		end
 
 end

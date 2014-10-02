@@ -23,7 +23,7 @@ feature {ANY} -- Status report
 			-- Returns the value stored in the cell
 			-- When the value is zero, it means that the
 			-- cell is not set.
-			-- Value should otherwise be a power of two (greater than one)
+			-- Value should otherwise be a power of two (greater or equal to one)
 
 	out: STRING
 			-- Provides a string representation of a cell (shows its value as a string)
@@ -88,16 +88,15 @@ feature {ANY} -- Status setting
 feature {ANY} -- Miscellaneous
 
 	is_valid_value (val: INTEGER): BOOLEAN
-			-- Returns true if value is either 0, or a power of two
-			-- greater than 1.
+			-- Returns true if value is either 0, or a power of two (including 1)
 		do
-			Result := val = 0 or (val > 1 and is_power_of_two (val))
+			Result := val = 0 or (is_power_of_two (val))
 		ensure
-			Result = (val = 0 or (val > 1 and is_power_of_two (val)))
+			Result = (val = 0 or (is_power_of_two (val)))
 		end
 
 	is_power_of_two (val: INTEGER): BOOLEAN
-			-- Returns True if val is power of 2
+			-- Returns True if val is power of 2 (including 1)
 		require
 			positive_value: val > 0
 		local
@@ -127,7 +126,7 @@ feature {ANY} -- Miscellaneous
 		end
 
 invariant
-		--a cell must have either zero or a value that is a power of two greater than 1
+		--a cell must have either zero or a value that is a power of two or equal to 1
 	value_can_not_be_other_that_zero_or_power_of_two: value = 0 or is_power_of_two (value)
 	value_can_not_be_one: value /= 1
 
