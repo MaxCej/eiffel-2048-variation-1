@@ -34,16 +34,16 @@ feature {ANY} -- Status report
 				do
 
 				 	  if value = 0 then
-				 	  	t := "    "
+				 	  	t := ""
 				 	  else
 				 	  	if value < 10 then
-				 	  		 t := "   " + value.out --cad.make_filled("4",3) + value.out
+				 	  		 t := "" + value.out --cad.make_filled("4",3) + value.out
 				 	  	else
 				 	  		if value >= 10 and value <= 99 then
-				 	  			t := "  " + value.out --cad.make_filled("4",2) + value.out
+				 	  			t := "" + value.out --cad.make_filled("4",2) + value.out
 				 	  		else
 				 	  			if  value >= 100 and value <= 999 then
-				 	  				t := " " + value.out--cad.make_filled("4",1) + value.out
+				 	  				t := "" + value.out--cad.make_filled("4",1) + value.out
 				 	  			else
 				 	  				t := value.out
 				 	  			end
@@ -99,9 +99,9 @@ feature {ANY} -- Miscellaneous
 			-- Returns true if value is either 0, or a power of two
 			-- greater than 1.
 		do
-			Result := val = 0 or (val>1 and is_power_of_two(val))
+			Result := val = 0 or (is_power_of_two(val))
 		ensure
-			Result = (val = 0 or (val > 1 and is_power_of_two (val)))
+			Result = (val = 0 or (is_power_of_two (val)))
 		end
 
 	is_power_of_two (val: INTEGER): BOOLEAN
