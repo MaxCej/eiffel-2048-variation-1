@@ -1,0 +1,25 @@
+@import url(fonts/clear-sans.css);
+html, body {
+  background-color: #FF6500;
+  color: #776e65;
+  font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+  font-size: 18px; 
+}
+
+body {
+  margin: 20%;
+    color: blue;
+    background-color: #FF8500
+}
+
+
+#svt {  
+    margin 20%;
+    width: 84px;
+    height: 45px;
+    border-style: double;
+    font-size:14px;
+    font-weight:200;
+    color: blue
+}
+
