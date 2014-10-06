@@ -28,14 +28,27 @@ feature
 
 feature {NONE} -- Execution
 
+
+    file_to_string (path: STRING): STRING
+	local
+    	l_file: PLAIN_TEXT_FILE
+    	l_content: STRING
+  	do
+    	create l_file.make_open_read (path)
+    	l_file.read_stream (l_file.count)
+    	l_content := l_file.last_string.twin
+    	l_file.close
+    	Result := l_content
+  	end
+
 	response (req: WSF_REQUEST): WSF_HTML_PAGE_RESPONSE
 			-- Computed response message.
 		do
 			create Result.make
 			--TODO: Download the http://code.jquery.com/jquery-latest.min.js and call locally
-			Result.add_javascript_url ("http://code.jquery.com/jquery-latest.min.js")
-Result.add_javascript_content("function getChoice(keyCode){var ret='';if (keyCode == 119)ret = 'w';if (keyCode == 115)ret = 's';if (keyCode == 100)ret = 'd';if (keyCode == 97)ret = 'a';return ret;}")
-Result.add_javascript_content ("$(document).keypress(function (e) {var key = getChoice(e.keyCode);if(key != ''){$.ajax({type : 'POST',url:'http://localhost:9999/',data:{user:key},contentType:'json',headers: {Accept : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8','Content-Type': 'application/x-www-form-urlencoded'}}).done(function(data){document.open();document.write(data);document.close();})}})")
+			Result.add_javascript_content (file_to_string("jquery.js"))
+			Result.add_javascript_content("function getChoice(keyCode){var ret='';if (keyCode == 119)ret = 'w';if (keyCode == 115)ret = 's';if (keyCode == 100)ret = 'd';if (keyCode == 97)ret = 'a';return ret;}")
+			Result.add_javascript_content ("$(document).keypress(function (e) {var key = getChoice(e.keyCode);if(key != ''){$.ajax({type : 'POST',url:'http://localhost:9999/',data:{user:key},contentType:'json',headers: {Accept : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8','Content-Type': 'application/x-www-form-urlencoded'}}).done(function(data){document.open();document.write(data);document.close();})}})")
 
 
 			if not is_attached then
@@ -43,9 +56,16 @@ Result.add_javascript_content ("$(document).keypress(function (e) {var key = get
 				create controller.make
 				--TODO: Download the http://gabrielecirulli.github.io/2048/style/main.css and call locally
 				Result.set_body (
-				"<link rel='stylesheet' type='text/css' href='http://gabrielecirulli.github.io/2048/style/main.css'>" +
-					controller.board.out)
+								"<link rel='stylesheet' type='text/css' href='http://localhost:8000/login.css'>"  +
+								file_to_string("login.js")
+								)
+
+			--	Result.set_body (
+			--					"<link rel='stylesheet' type='text/css' href='http://localhost:8000/main.css'>"  +
+			--					controller.board.out
+			--					)
 			else
+				
 
 				if attached req.string_item ("user") as l_user then
 					if l_user.is_equal ("w") then
@@ -77,7 +97,7 @@ Result.add_javascript_content ("$(document).keypress(function (e) {var key = get
 					end
 					--TODO: Download the http://gabrielecirulli.github.io/2048/style/main.css and call locally
 					Result.set_body (
-					"<link rel='stylesheet' type='text/css' href='http://gabrielecirulli.github.io/2048/style/main.css'>" +
+					"<link rel='stylesheet' type='text/css' href='http://localhost:8000/main.css'>" +
 					controller.board.out
 					)
 				end
@@ -111,5 +131,4 @@ feature {NONE} -- Initialization
 				--| If you don't need any custom options, you are not obliged to redefine `initialize'
 			Precursor
 		end
-
 end
