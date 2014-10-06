@@ -1,8 +1,8 @@
 <form>
     <p>Welcome to the 2048 house!
 </form>
-Username: <input type="text" name="user">
 <form>
+Username: <input type="text" name="user">
 Password: <input type="password" name="pwd">
-    <button id=svt type='button' onclick="alert('ok')" >Login</button >
+    <input type="submit" value="Validate">
 </form>
