@@ -25,8 +25,14 @@ create
 feature
 	controller: CONTROLLER_2048
 	is_attached : BOOLEAN
+	status: STRING -- play , login, newuser
+	password : STRING
+	user : STRING
 
 feature {NONE} -- Execution
+
+
+
 
 
     file_to_string (path: STRING): STRING
@@ -43,31 +49,43 @@ feature {NONE} -- Execution
 
 	response (req: WSF_REQUEST): WSF_HTML_PAGE_RESPONSE
 			-- Computed response message.
+
 		do
+
 			create Result.make
+
 			--TODO: Download the http://code.jquery.com/jquery-latest.min.js and call locally
-			Result.add_javascript_content (file_to_string("jquery.js"))
-			Result.add_javascript_content("function getChoice(keyCode){var ret='';if (keyCode == 119)ret = 'w';if (keyCode == 115)ret = 's';if (keyCode == 100)ret = 'd';if (keyCode == 97)ret = 'a';return ret;}")
-			Result.add_javascript_content ("$(document).keypress(function (e) {var key = getChoice(e.keyCode);if(key != ''){$.ajax({type : 'POST',url:'http://localhost:9999/',data:{user:key},contentType:'json',headers: {Accept : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8','Content-Type': 'application/x-www-form-urlencoded'}}).done(function(data){document.open();document.write(data);document.close();})}})")
 
 
-			if not is_attached then
-				is_attached := true
-				create controller.make
-				--TODO: Download the http://gabrielecirulli.github.io/2048/style/main.css and call locally
-				Result.set_body (
-								"<link rel='stylesheet' type='text/css' href='http://localhost:8000/login.css'>"  +
-								file_to_string("login.js")
-								)
+			if status.is_equal ("login") then
+					--TODO: Download the http://gabrielecirulli.github.io/2048/style/main.css and call locally
+					Result.set_body ("<link rel='stylesheet' type='text/css' href='http://localhost:8000/login.css'>"  +
+							file_to_string("login.js")
+							)
+					if attached req.string_item ("user") as u then
+						status := "play"
+						user := u.string
 
-			--	Result.set_body (
-			--					"<link rel='stylesheet' type='text/css' href='http://localhost:8000/main.css'>"  +
-			--					controller.board.out
-			--					)
-			else
-				
+					end
+					if attached req.string_item ("pwd") as pass then
+						password := pass.string
+					end
+			end
+			if status.is_equal ("newuser") then
+
+			end
+
+			if status.is_equal ("play") then
+				Result.add_javascript_content (file_to_string("jquery.js"))
+				Result.add_javascript_content("function getChoice(keyCode){var ret='';if (keyCode == 119)ret = 'w';if (keyCode == 115)ret = 's';if (keyCode == 100)ret = 'd';if (keyCode == 97)ret = 'a';return ret;}")
+				Result.add_javascript_content ("$(document).keypress(function (e) {var key = getChoice(e.keyCode);if(key != ''){$.ajax({type : 'POST',url:'http://localhost:9999/',data:{user:key},contentType:'json',headers: {Accept : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8','Content-Type': 'application/x-www-form-urlencoded'}}).done(function(data){document.open();document.write(data);document.close();})}})")
+				Result.set_body ("<link rel='stylesheet' type='text/css' href='http://localhost:8000/main.css'>" +
+																	controller.board.out
+																	)
 
 				if attached req.string_item ("user") as l_user then
+
+
 					if l_user.is_equal ("w") then
 						if controller.board.can_move_up then
 							controller.up
@@ -96,11 +114,13 @@ feature {NONE} -- Execution
 						Result.add_javascript_content ("alert('YOU LOST!!!!!!!!!!!!!!')")
 					end
 					--TODO: Download the http://gabrielecirulli.github.io/2048/style/main.css and call locally
-					Result.set_body (
-					"<link rel='stylesheet' type='text/css' href='http://localhost:8000/main.css'>" +
-					controller.board.out
-					)
+					Result.set_body ("<link rel='stylesheet' type='text/css' href='http://localhost:8000/main.css'>" +
+														controller.board.out
+														)
 				end
+
+
+
 			end
 
 				--| note:
@@ -113,11 +133,14 @@ feature {NONE} -- Execution
 
 		end
 
+
 feature {NONE} -- Initialization
 
 	initialize
 		do
-				--| Uncomment the following line, to be able to load options from the file ewf.ini
+			--| Uncomment the following line, to be able to load options from the file ewf.ini
+			status := "login"
+			create controller.make
 			create {WSF_SERVICE_LAUNCHER_OPTIONS_FROM_INI} service_options.make_from_file ("ewf.ini")
 
 				--| You can also uncomment the following line if you use the Nino connector
