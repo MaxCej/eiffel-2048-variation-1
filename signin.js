@@ -2,10 +2,12 @@
     <p>Create a new user!
 </form>
 <form>
-Username: <input type="text" name="user">
-Password: <input type="password" name="pwd">
+Name: <input type="text" name="name">
+Surname: <input type="text" name="surname">
+Username: <input type="text" name="nick">
+Password: <input type="password" name="pass">
     <input type="submit" value="Sign in">
 <form>
-    <input type="submit" value="Cancel">
+    <p><b>press 'r' to cancel</b>.</p>
 <form>
 </form>
