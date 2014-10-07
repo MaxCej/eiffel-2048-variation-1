@@ -27,7 +27,7 @@ feature
 	is_attached : BOOLEAN
 	status: STRING -- play , login, newuser
 	password : STRING
-	user : STRING
+	user : USER_2048
 
 feature {NONE} -- Execution
 
@@ -62,13 +62,13 @@ feature {NONE} -- Execution
 					Result.set_body ("<link rel='stylesheet' type='text/css' href='http://localhost:8000/login.css'>"  +
 							file_to_string("login.js")
 							)
-					if attached req.string_item ("user") as u then
-						status := "play"
-						user := u.string
-
+					if (attached req.string_item ("user") as u) and (attached req.string_item ("pwd") as pass) then
+						login(u.string,pass.string)
 					end
-					if attached req.string_item ("pwd") as pass then
-						password := pass.string
+					if user = void then
+							Result.add_javascript_content ("alert('Invalid nickname or password')")
+					else
+						status := "play"
 					end
 			end
 			if status.is_equal ("newuser") then
@@ -153,5 +153,28 @@ feature {NONE} -- Initialization
 
 				--| If you don't need any custom options, you are not obliged to redefine `initialize'
 			Precursor
+		end
+
+feature --login
+
+	login (username: STRING; pass: STRING)
+			-- validate the user datas
+			-- load the user from the file into the user variable, or void if the user doesn't exist
+		require
+			(create {USER_2048}.make_for_test).is_valid_nickname (username) and pass /= Void
+		local
+			possible_user: USER_2048
+		do
+			create possible_user.make_with_nickname (username)
+			if possible_user.has_unfinished_game then
+				possible_user.load_game
+				if equal(pass, possible_user.password) then
+					user := possible_user
+				else
+					user := Void
+				end
+			else
+				user := Void
+			end
 		end
 end
