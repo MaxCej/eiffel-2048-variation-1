@@ -64,16 +64,31 @@ feature {NONE} -- Execution
 							)
 					if (attached req.string_item ("user") as u) and (attached req.string_item ("pwd") as pass) then
 						login(u.string,pass.string)
-					end
-					if user = void then
+						if user = Void then
 							Result.add_javascript_content ("alert('Invalid nickname or password')")
-					else
-						status := "play"
+						else
+							status := "play"
+						end
+
 					end
-			end
-			if status.is_equal ("newuser") then
+
 
 			end
+			if status.is_equal ("newuser") then
+				Result.set_body ("<link rel='stylesheet' type='text/css' href='http://localhost:8000/signin.css'>"  +
+						file_to_string("signin.js")
+						)
+				if (attached req.string_item ("name") as na) and (attached req.string_item ("surname") as sur) and(attached req.string_item ("nick") as ni) and (attached req.string_item ("pass") as pa) then
+					create_user(na,sur,ni,pa)
+					if user/= Void then
+						status:="login"
+						Result.add_javascript_content ("alert('User created successfully')")
+					else
+						Result.add_javascript_content ("alert('Invalid data, please ensure to enter the data correctly')")
+					end
+				end
+			end
+
 
 			if status.is_equal ("play") then
 				Result.add_javascript_content (file_to_string("jquery.js"))
@@ -177,4 +192,27 @@ feature --login
 				user := Void
 			end
 		end
+
+		create_user (name:STRING; surname:STRING; nickname:STRING; pass:STRING)
+	--Read the user data
+	--Create a new user
+	local
+		valid_data : BOOLEAN
+		new_user : USER_2048
+	do
+		create new_user.make_for_test
+		valid_data := False
+			if new_user.is_valid_name (name) and new_user.is_valid_name (surname) and new_user.is_valid_name (nickname) and new_user.is_valid_password (password) then --validate the data
+				if not  new_user.existing_file (nickname) then
+					valid_data := True
+				end
+			end
+
+
+		if valid_data then
+			create new_user.make_new_user (name, surname,nickname,password)
+			user := new_user
+		end
+
+	end
 end
