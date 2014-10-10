@@ -233,7 +233,7 @@ feature -- tal vez las rutas no estan tan buenas
 			mesg.add_javascript_content (file_to_string("jquery.js"))
 			mesg.add_javascript_content("function getChoice(keyCode){var ret='';if (keyCode == 119)ret = 'w';if (keyCode == 115)ret = 's';if (keyCode == 100)ret = 'd';if (keyCode == 97)ret = 'a';return ret;}")
 			mesg.add_javascript_content ("$(document).keypress(function (e) {var key = getChoice(e.keyCode);if(key != ''){$.ajax({type : 'POST',url:'http://localhost:9999/play',data:{user:key},contentType:'json',headers: {Accept : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8','Content-Type': 'application/x-www-form-urlencoded'}}).done(function(data){document.open();document.write(data);document.close();})}})")
-			mesg.set_body ("<link rel='stylesheet' type='text/css' href='http://localhost:8000/main.css'>" +
+			mesg.set_body ( "<form><h1>ENJOY PLAYING</h1></form><form><font size='50'>2048 ONE</font></form>" + "<link rel='stylesheet' type='text/css' href='http://localhost:8000/main.css'>" +
 																	controller.board.out + "<p> <a href=%"/login/%">Save and quit</a></p>"
 																	)
 
