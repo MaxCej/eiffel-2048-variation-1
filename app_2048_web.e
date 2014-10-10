@@ -27,7 +27,6 @@ create
 feature
 	controller: CONTROLLER_2048
 	is_attached : BOOLEAN
-	status: STRING -- play , login, newuser
 	password : STRING
 	user : USER_2048
 
@@ -38,6 +37,7 @@ feature {NONE} -- Execution
 	do
 		map_agent_uri ("/login", agent login_screen, Void)
 		map_agent_uri ("/signin", agent signin_screen, Void)
+		map_agent_uri ("/play", agent play, Void)
 	end
 
 feature -- Helper: mapping
@@ -109,7 +109,6 @@ feature {NONE} -- Initialization
 	initialize
 		do
 			--| Uncomment the following line, to be able to load options from the file ewf.ini
-			status:="login"
 			create controller.make
 			create {WSF_SERVICE_LAUNCHER_OPTIONS_FROM_INI} service_options.make_from_file ("ewf.ini")
 
@@ -147,7 +146,9 @@ feature --login
 			else
 				user := Void
 			end
-		end
+
+	end
+
 
 	create_user (name:STRING; surname:STRING; nickname:STRING; pass:STRING)
 	--Read the user data
@@ -158,7 +159,7 @@ feature --login
 	do
 		create new_user.make_for_test
 		valid_data := False
-			if new_user.is_valid_name (name) and new_user.is_valid_name (surname) and new_user.is_valid_name (nickname) and new_user.is_valid_password (password) then --validate the data
+			if new_user.is_valid_name (name) and new_user.is_valid_name (surname) and new_user.is_valid_name (nickname) and new_user.is_valid_password (pass) then --validate the data
 				if not  new_user.existing_file (nickname) then
 					valid_data := True
 				end
@@ -166,7 +167,7 @@ feature --login
 
 
 		if valid_data then
-			create new_user.make_new_user (name, surname,nickname,password)
+			create new_user.make_new_user (name, surname,nickname,pass)
 			user := new_user
 		end
 
@@ -184,8 +185,8 @@ feature -- tal vez las rutas no estan tan buenas
 		if (attached req.string_item ("name") as na) and (attached req.string_item ("surname") as sur) and(attached req.string_item ("nick") as ni) and (attached req.string_item ("pass") as pa) then
 			create_user(na,sur,ni,pa)
 			if user/= Void then
-				status:="login"
-				mesg.add_javascript_content ("alert('User created successfully')")
+				mesg.add_javascript_content ("alert('User created succesfully')")
+				mesg.set_body ("<link rel='stylesheet' type='text/css' href='http://localhost:8000/login.css'>"+"<p> <a href=%"/play/%">PLAY</a></p>")
 			else
 				mesg.add_javascript_content ("alert('Invalid data, please ensure to enter the data correctly')")
 			end
@@ -200,6 +201,8 @@ feature -- tal vez las rutas no estan tan buenas
 		l_username: STRING_32
 
 	do
+		user:=Void
+		create controller.make
 		create mesg.make
 		--TODO: Download the http://code.jquery.com/jquery-latest.min.js and call locally
 		--TODO: Download the http://gabrielecirulli.github.io/2048/style/main.css and call locally
@@ -212,15 +215,25 @@ feature -- tal vez las rutas no estan tan buenas
 			if user = Void then
 				mesg.add_javascript_content ("alert('Invalid nickname or password')")
 			else
-				status := "play"
+				user.load_game
+				create controller.make_with_board (user.game)
+				mesg.set_body ("<link rel='stylesheet' type='text/css' href='http://localhost:8000/login.css'>"+"<p> <a href=%"/play/%">PLAY</a></p>")
 			end
 		end
-		if status.is_equal ("play") then
+		res.send (mesg)
+	end
+
+
+	play(req:WSF_REQUEST;res: WSF_RESPONSE)
+	local
+		mesg: WSF_HTML_PAGE_RESPONSE
+	do
+			create mesg.make
 			mesg.add_javascript_content (file_to_string("jquery.js"))
 			mesg.add_javascript_content("function getChoice(keyCode){var ret='';if (keyCode == 119)ret = 'w';if (keyCode == 115)ret = 's';if (keyCode == 100)ret = 'd';if (keyCode == 97)ret = 'a';return ret;}")
-			mesg.add_javascript_content ("$(document).keypress(function (e) {var key = getChoice(e.keyCode);if(key != ''){$.ajax({type : 'POST',url:'http://localhost:9999/',data:{user:key},contentType:'json',headers: {Accept : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8','Content-Type': 'application/x-www-form-urlencoded'}}).done(function(data){document.open();document.write(data);document.close();})}})")
+			mesg.add_javascript_content ("$(document).keypress(function (e) {var key = getChoice(e.keyCode);if(key != ''){$.ajax({type : 'POST',url:'http://localhost:9999/play',data:{user:key},contentType:'json',headers: {Accept : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8','Content-Type': 'application/x-www-form-urlencoded'}}).done(function(data){document.open();document.write(data);document.close();})}})")
 			mesg.set_body ("<link rel='stylesheet' type='text/css' href='http://localhost:8000/main.css'>" +
-																	controller.board.out
+																	controller.board.out + "<p> <a href=%"/login/%">Save and quit</a></p>"
 																	)
 
 			if attached req.string_item ("user") as l_user then
@@ -253,10 +266,11 @@ feature -- tal vez las rutas no estan tan buenas
 				end
 				--TODO: Download the http://gabrielecirulli.github.io/2048/style/main.css and call locally
 				mesg.set_body ("<link rel='stylesheet' type='text/css' href='http://localhost:8000/main.css'>" +
-														controller.board.out
+														controller.board.out + "<p> <a href=%"/login/%">Save and quit</a></p>"
 														)
 			end
-		end
-		res.send (mesg)
+			user.save_game (user.game)
+			res.send (mesg)
 	end
+
 end

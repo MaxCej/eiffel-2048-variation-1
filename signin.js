@@ -7,7 +7,5 @@ Surname: <input type="text" name="surname">
 Username: <input type="text" name="nick">
 Password: <input type="password" name="pass">
     <input type="submit" value="Sign in">
-<form>
-    <p><b>press 'r' to cancel</b>.</p>
-<form>
 </form>
+
