@@ -186,6 +186,7 @@ feature -- tal vez las rutas no estan tan buenas
 			create_user(na,sur,ni,pa)
 			if user/= Void then
 				mesg.add_javascript_content ("alert('User created succesfully')")
+				create controller.make_with_board (user.game)
 				mesg.set_body ("<link rel='stylesheet' type='text/css' href='http://localhost:8000/login.css'>"+"<p> <a href=%"/play/%">PLAY</a></p>")
 			else
 				mesg.add_javascript_content ("alert('Invalid data, please ensure to enter the data correctly')")
@@ -259,10 +260,12 @@ feature -- tal vez las rutas no estan tan buenas
 				end
 				if controller.board.is_winning_board then
 					mesg.add_javascript_content ("alert('YOU WON!!!!!!!!!!!!!!')")
+					create controller.make
 				end
 
 				if not controller.board.can_move_up and not controller.board.can_move_down and not controller.board.can_move_left and not controller.board.can_move_right then
 					mesg.add_javascript_content ("alert('YOU LOST!!!!!!!!!!!!!!')")
+					create controller.make
 				end
 				--TODO: Download the http://gabrielecirulli.github.io/2048/style/main.css and call locally
 				mesg.set_body ("<link rel='stylesheet' type='text/css' href='http://localhost:8000/main.css'>" +
